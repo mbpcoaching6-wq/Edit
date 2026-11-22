@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 cd /home/user/Edit
-export U2NET_HOME=/home/user/Edit/models/rembg HF_HOME=/home/user/Edit/models/hf
+export U2NET_HOME=/home/user/Edit/models/rembg HF_HOME=/home/user/Edit/models/hf HF_HUB_DISABLE_XET=1
 echo "== step: python packages"
 [ -d .venv ] || python3 -m venv .venv
 .venv/bin/pip install -q --upgrade pip
