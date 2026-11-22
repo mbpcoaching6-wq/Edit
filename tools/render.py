@@ -19,8 +19,7 @@ PRI = pr.get("color_primaries", "bt709"); RNG = pr.get("color_range", "tv")
 MATRIX = {"bt2020nc": "bt2020", "bt2020c": "bt2020", "bt709": "bt709", "smpte170m": "bt601",
           "bt470bg": "bt601"}.get(CS, "bt709")
 HDR = TRC in ("arib-std-b67", "smpte2084")
-# "white" in HDR video = reference white (HLG 75%), so text looks white, not glaring
-WHITE = C.get("white_level", 0.75 if HDR else 1.0)
+WHITE = C.get("white_level", 1.0)
 COLOR = np.array(C.get("word_color", [1, 1, 1]), np.float32) * WHITE
 CAP_COLOR = np.array(C.get("caption_color", [1, 1, 1]), np.float32) * WHITE
 
@@ -198,7 +197,8 @@ if only_frame is None: enc.stdin.close(); enc.wait()
 raw = C["out_png"] + ".raw"
 if os.path.exists(raw):
     zp = {"bt2020": "2020", "bt709": "709"}.get(PRI, "709")
-    vf = (f"zscale=pin={zp}:p=709:tin={TRC}:t=709:rin=full:r=full:npl=203,format=rgb24") if HDR \
+    vf = (f"zscale=pin={zp}:p={zp}:tin={TRC}:t=linear:rin=full:r=full:npl=203,format=gbrpf32le,"
+          "tonemap=hable:desat=0,zscale=p=709:t=709:r=full,format=rgb24") if HDR \
          else f"scale=in_color_matrix={MATRIX}:in_range=pc,format=rgb24"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb48le",
         "-s", f"{W}x{H}", "-i", raw, "-vf", vf, "-frames:v", "1", C["out_png"]], check=True)
