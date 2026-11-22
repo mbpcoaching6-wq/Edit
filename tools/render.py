@@ -28,11 +28,21 @@ WI = C["word_index"]
 T_WORD = words[WI]["s"]
 F_WORD = int(np.ceil(T_WORD * FPS - 1e-6))
 
+_cache = {}
+def _load(f):
+    if f not in _cache:
+        p = os.path.join(C["masks"], f"{f:05d}.png")
+        _cache[f] = (np.asarray(Image.open(p).convert("L").resize((W, H), Image.BICUBIC), np.float32) / 255.0
+                     if os.path.exists(p) else None)
+        for k in [k for k in _cache if k < f - 2]: del _cache[k]
+    return _cache[f]
+
 def mask_at(f):
-    p = os.path.join(C["masks"], f"{f:05d}.png")
-    if not os.path.exists(p): return None
-    m = Image.open(p).convert("L").resize((W, H), Image.BICUBIC)
-    return np.asarray(m, np.float32) / 255.0
+    m = _load(f)
+    if m is not None: return m
+    a, b = _load(f - 1), _load(f + 1)       # frame skipped by the fast option: blend its neighbours
+    if a is not None and b is not None: return (a + b) / 2
+    return a if a is not None else b
 
 # ---------- big word layer ----------
 def text_layer(text, font, fill=255):
@@ -175,7 +185,7 @@ while True:
         a = np.zeros((H, W), np.float32)
         paste(a, *word_at(f))
         m = mask_at(f)
-        if m is None: m = mask_at(f - 1) if mask_at(f - 1) is not None else np.zeros((H, W), np.float32)
+        if m is None: m = np.zeros((H, W), np.float32)
         over(frame, a * (1 - m), COLOR)           # word behind: only where you're not
     cap = caption_rgba(f / FPS)
     if cap:
