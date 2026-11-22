@@ -7,8 +7,8 @@ echo "== step: python packages"
 .venv/bin/pip install -q --upgrade pip
 .venv/bin/pip install -q faster-whisper "rembg[cpu]" pillow numpy
 echo "== step: fonts"
-curl -sSfL -o fonts/Anton-Regular.ttf "https://github.com/google/fonts/raw/main/ofl/anton/Anton-Regular.ttf"
-curl -sSfL -o "fonts/Inter.ttf" "https://github.com/google/fonts/raw/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf"
+curl -sSfL -o fonts/Anton-Regular.ttf "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf"
+curl -sSfL -o "fonts/Inter.ttf" "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf"
 echo "== step: speech model (~0.5 GB)"
 .venv/bin/python -c "from faster_whisper import WhisperModel; WhisperModel('small', device='cpu', compute_type='int8', download_root='/home/user/Edit/models/whisper'); print('speech model ready')"
 echo "== step: cut-out model (~1 GB)"
