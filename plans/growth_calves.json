@@ -1,0 +1,243 @@
+{
+ "video": "/home/user/Edit/work/gc_cut.mp4",
+ "words": "/home/user/Edit/work/gcc_words.json",
+ "masks": "/home/user/Edit/work/gc_masks",
+ "out_mp4": "/home/user/Edit/output/growth_calves_edit.mp4",
+ "preview_dir": "/home/user/Edit/work/preview",
+ "tag": "SCIENCE",
+ "sfx_gain": 0.35,
+ "plain_captions": true,
+ "face": [
+  520,
+  700,
+  330
+ ],
+ "word_fixes": {
+  "143": "evidence-based",
+  "144": ""
+ },
+ "keywords": [],
+ "segments": [
+  {
+   "t0": 0,
+   "t1": 2.45,
+   "kind": "talk",
+   "cap_y": 0.72,
+   "pulse": [
+    0.0
+   ],
+   "big": [
+    {
+     "t": 0.0,
+     "text": "STOP",
+     "emotion": "slam",
+     "y": 0.245,
+     "size": 520
+    }
+   ]
+  },
+  {
+   "t0": 2.45,
+   "t1": 4.25,
+   "kind": "talk",
+   "cap_y": 0.72,
+   "punch": [
+    [
+     2.45,
+     4.25,
+     1.12
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.4
+   ],
+   "big": [
+    {
+     "t": 3.08,
+     "text": "NO ONE",
+     "emotion": "rise",
+     "y": 0.27,
+     "size": 420
+    }
+   ]
+  },
+  {
+   "t0": 4.25,
+   "t1": 6.85,
+   "kind": "compare",
+   "t_vs": 4.98,
+   "t_win": 5.3
+  },
+  {
+   "t0": 6.85,
+   "t1": 8.4,
+   "kind": "talk",
+   "cap_y": 0.72,
+   "punch": [
+    [
+     6.85,
+     8.4,
+     1.2
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.4
+   ],
+   "big": [
+    {
+     "t": 7.1,
+     "text": "NOT",
+     "emotion": "shake",
+     "y": 0.27,
+     "size": 520
+    }
+   ]
+  },
+  {
+   "t0": 8.4,
+   "t1": 10.85,
+   "kind": "people",
+   "t_weeks": 10.1
+  },
+  {
+   "t0": 10.85,
+   "t1": 12.4,
+   "kind": "sets",
+   "t_eq": 10.9
+  },
+  {
+   "t0": 12.4,
+   "t1": 21.5,
+   "kind": "groups",
+   "groups": [
+    {
+     "t": 12.5,
+     "mode": "full",
+     "color": "white",
+     "label": "FULL"
+    },
+    {
+     "t": 14.34,
+     "mode": "top",
+     "color": "cyan",
+     "label": "TOP HALF",
+     "note": {
+      "t": 16.4,
+      "text": "BOUNCE"
+     }
+    },
+    {
+     "t": 18.06,
+     "mode": "bottom",
+     "color": "orange",
+     "label": "BOTTOM HALF",
+     "note": {
+      "t": 20.54,
+      "text": "STRETCH"
+     }
+    }
+   ]
+  },
+  {
+   "t0": 21.5,
+   "t1": 29.95,
+   "kind": "bars",
+   "max_value": 15,
+   "columns": [
+    {
+     "label": "BOTTOM HALF",
+     "color": "orange",
+     "value": 15,
+     "t": 26.36,
+     "badge": {
+      "t": 28.8,
+      "text": "X2"
+     }
+    },
+    {
+     "label": "FULL",
+     "color": "white",
+     "value": 7,
+     "t": 24.3
+    },
+    {
+     "label": "TOP HALF",
+     "color": "cyan",
+     "value": 3,
+     "t": 22.44
+    }
+   ]
+  },
+  {
+   "t0": 29.95,
+   "t1": 32.6,
+   "kind": "talk",
+   "cap_y": 0.72,
+   "big": [
+    {
+     "t": 30.25,
+     "text": "BOUNCE",
+     "emotion": "bounce",
+     "y": 0.245,
+     "size": 420
+    },
+    {
+     "t": 31.85,
+     "text": "SPRING",
+     "emotion": "pop",
+     "y": 0.245,
+     "size": 420
+    }
+   ]
+  },
+  {
+   "t0": 32.6,
+   "t1": 36.6,
+   "kind": "energy",
+   "t_less": 35.68
+  },
+  {
+   "t0": 36.6,
+   "t1": 41.35,
+   "kind": "pause",
+   "pause": [
+    38.18,
+    39.8
+   ]
+  },
+  {
+   "t0": 41.35,
+   "t1": 99,
+   "kind": "talk",
+   "cap_y": 0.72,
+   "pulse": [
+    43.64
+   ],
+   "big": [
+    {
+     "t": 41.44,
+     "text": "SEND THIS",
+     "emotion": "pop",
+     "y": 0.245,
+     "size": 360
+    },
+    {
+     "t": 42.38,
+     "text": "SMALL CALVES",
+     "emotion": "grow",
+     "y": 0.245,
+     "size": 300
+    },
+    {
+     "t": 43.6,
+     "text": "FOLLOW",
+     "emotion": "slam",
+     "y": 0.245,
+     "size": 460
+    }
+   ]
+  }
+ ]
+}

@@ -13,7 +13,9 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", video, "-vf", "scale=1080:1
 a = np.load(npy); hop = 160; n = len(a) // hop
 db = 20 * np.log10(np.sqrt((a[:n * hop].reshape(n, hop) ** 2).mean(1)) + 1e-9)
 db = np.convolve(db, np.ones(5) / 5, "same")
-floor = np.percentile(db, 10); quiet = db < floor + above
+floor = np.percentile(db, 10)
+# quiet rooms: footsteps/rustle sit far above the floor, so also stay within ~24 dB of loud speech
+thresh = max(floor + above, np.percentile(db, 95) - 24); quiet = db < thresh
 dur = float(json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", video],
                                       capture_output=True).stdout)["format"]["duration"])
 words = json.load(open(wj))["words"]
@@ -41,6 +43,8 @@ for s, e in cuts:
     t = e
 if t < dur - 1 / FPS: keep.append([t, snap(dur)])
 keep = [k for k in keep if k[1] - k[0] >= 0.3 or quiet[int(k[0] * 100):int(k[1] * 100)].mean() < 0.5]
+# drop pieces where nobody speaks at all (noise between takes)
+keep = [k for k in keep if any(w["s"] < k[1] and w["e"] > k[0] for w in words)]
 
 def remap(x):
     out_t = 0.0
@@ -52,16 +56,21 @@ def remap(x):
 for w in words: w["s"], w["e"] = round(remap(w["s"]), 3), round(remap(w["e"]), 3)
 json.dump(dict(words=words, keep=keep), open(out_w, "w"), indent=1)
 
-fc, cat = [], ""
+# encode each kept piece on its own (one big trim/concat graph runs out of memory), then join them losslessly
+import os, tempfile
+tmp = tempfile.mkdtemp(dir=os.path.dirname(os.path.abspath(out)))
+parts = []
 for k, (s, e) in enumerate(keep):
-    L = e - s; f = min(0.012, L / 4)
-    fc.append(f"[0:v]trim={s:.4f}:{e:.4f},setpts=PTS-STARTPTS[v{k}]")
-    fc.append(f"[0:a]atrim={s:.4f}:{e:.4f},asetpts=PTS-STARTPTS,afade=t=in:d={f:.4f},afade=t=out:st={L - f:.4f}:d={f:.4f}[a{k}]")
-    cat += f"[v{k}][a{k}]"
-fc.append(f"{cat}concat=n={len(keep)}:v=1:a=1[v][a]")
-subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", proxy, "-filter_complex", ";".join(fc), "-map", "[v]", "-map", "[a]",
-                "-c:v", "libx264", "-preset", "fast", "-crf", "12", "-pix_fmt", "yuv420p", "-colorspace", "bt709",
-                "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "aac", "-b:a", "256k", out], check=True)
+    L = e - s; f = min(0.012, L / 4); part = os.path.join(tmp, f"p{k:03d}.mp4")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{s:.4f}", "-i", proxy, "-t", f"{L:.4f}",
+                    "-af", f"afade=t=in:d={f:.4f},afade=t=out:st={L - f:.4f}:d={f:.4f}", "-r", str(FPS),
+                    "-c:v", "libx264", "-preset", "fast", "-crf", "12", "-pix_fmt", "yuv420p", "-colorspace", "bt709",
+                    "-color_primaries", "bt709", "-color_trc", "bt709", "-c:a", "aac", "-b:a", "256k", "-ar", "48000", part], check=True)
+    parts.append(part)
+lst = os.path.join(tmp, "list.txt"); open(lst, "w").write("".join(f"file '{p}'\n" for p in parts))
+subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", out], check=True)
+for p in parts: os.remove(p)
+os.remove(lst); os.rmdir(tmp)
 new = sum(e - s for s, e in keep)
-print(f"floor {floor:.1f} dB, {len(cuts)} cuts, {dur:.2f}s -> {new:.2f}s (removed {dur - new:.2f}s)")
+print(f"floor {floor:.1f} dB, threshold {thresh:.1f} dB, {len(cuts)} cuts, {dur:.2f}s -> {new:.2f}s (removed {dur - new:.2f}s)")
 print("cuts:", [(round(s, 2), round(e, 2)) for s, e in cuts])

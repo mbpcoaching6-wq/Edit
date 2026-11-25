@@ -51,6 +51,8 @@ for gi, g in enumerate(groups):
     end = words[groups[gi + 1][0]]["s"] if gi + 1 < len(groups) else words[g[-1]]["e"] + 1.0
     for i in g: words[i]["g_end"] = min(end, words[g[-1]]["e"] + 1.2)
 
+PLAIN = P.get("plain_captions", False)
+
 def draw_caption(c, t, cy, size=96, maxw=960):
     g = next((g for g in groups if words[g[0]]["s"] - 0.03 <= t < words[g[0]]["g_end"]), None)
     if g is None: return
@@ -61,23 +63,37 @@ def draw_caption(c, t, cy, size=96, maxw=960):
         if line and x + sp + wd > maxw: lines.append(line); line, x = [], 0
         line.append((i, wd)); x += (sp if len(line) > 1 else 0) + wd
     lines.append(line)
-    d = ImageDraw.Draw(c); lh = int(size * 1.18); y = cy - lh * len(lines) / 2
+    lh = int(size * 1.18); y0 = cy - lh * len(lines) / 2
     top_off, bot_off = f.getbbox("H")[1], f.getbbox("H")[3]
+    # plain mode: white words on one soft drop-shadow layer (drawn for the band only, for speed)
+    band_top = int(max(0, y0 - 60)); band_h = int(min(H, y0 + lh * len(lines) + 80)) - band_top
+    sh = Image.new("L", (W, band_h), 0) if PLAIN else None
+    d = ImageDraw.Draw(c); ds = ImageDraw.Draw(sh) if PLAIN else None
+    placed = []; y = y0
     for line in lines:
         tw = sum(wd for _, wd in line) + sp * (len(line) - 1); x = (W - tw) / 2; boxes = {}
         for i, wd in line:
             if words[i]["s"] > t + 0.02: x += wd + sp; continue
             a = ease_out((t - words[i]["s"]) / 0.12)
-            colour = COL[col_of[i]] if col_of[i] else COL["white"]
+            colour = COL["white"] if PLAIN or not col_of[i] else COL[col_of[i]]
             dy = (1 - ease_back((t - words[i]["s"]) / 0.18)) * 18
-            d.text((x + 4, y + 6 + dy), words[i]["u"], font=f, fill=(0, 0, 0))
-            d.text((x, y + dy), words[i]["u"], font=f, fill=mix(DIM, colour, a))
-            if span_of[i] is not None:
-                b = boxes.setdefault(span_of[i], [x, x + wd, col_of[i]]); b[1] = x + wd
+            if PLAIN:
+                ds.text((x + 3, y + 8 + dy - band_top), words[i]["u"], font=f, fill=int(235 * a))
+                placed.append((x, y + dy, words[i]["u"], mix((200, 200, 200), colour, a)))
+            else:
+                d.text((x + 4, y + 6 + dy), words[i]["u"], font=f, fill=(0, 0, 0))
+                d.text((x, y + dy), words[i]["u"], font=f, fill=mix(DIM, colour, a))
+                if span_of[i] is not None:
+                    b = boxes.setdefault(span_of[i], [x, x + wd, col_of[i]]); b[1] = x + wd
             x += wd + sp
         for x0, x1, colour in boxes.values():
             pad = 12; d.rectangle((x0 - pad, y + top_off - pad, x1 + pad, y + bot_off + pad), outline=COL[colour], width=5)
         y += lh
+    if PLAIN:
+        blur = sh.filter(ImageFilter.GaussianBlur(10))
+        layer = Image.new("RGBA", (W, band_h), (0, 0, 0, 255)); layer.putalpha(blur)
+        c.alpha_composite(layer, (0, band_top))
+        for x, yy, txt, col in placed: d.text((x, yy), txt, font=f, fill=col)
 
 # ---------- glow drawing helpers ----------
 class Glow:
@@ -330,16 +346,93 @@ def bubble(c, src, t, S):
     c.paste(face, (int(cx - r), int(cy - r)), _mask[k])
 
 # ---------- talk shots ----------
-def talk(src, t, S):
+def talk_xform(t, S):
     z = 1.0
     for a, b, zz in S.get("punch", []):
         if a <= t < b: z = zz
     for tp in S.get("pulse", []):                           # quick zoom-pulse on a word
         if tp <= t < tp + 0.35: z *= 1 + 0.08 * math.sin(math.pi * (t - tp) / 0.35)
-    if abs(z - 1) < 1e-3: return src.convert("RGBA")
+    if abs(z - 1) < 1e-3: return None
     cx, cy = S.get("zoom_center", [0.5, 0.42]); w, h = W / z, H / z
     x0 = clamp(cx * W - w / 2, 0, W - w); y0 = clamp(cy * H - h / 2, 0, H - h)
-    return src.crop((int(x0), int(y0), int(x0 + w), int(y0 + h))).resize((W, H), Image.BICUBIC).convert("RGBA")
+    return (int(x0), int(y0), int(x0 + w), int(y0 + h))
+
+def talk(src, t, S):
+    box = talk_xform(t, S)
+    return (src if box is None else src.crop(box).resize((W, H), Image.BICUBIC)).convert("RGBA")
+
+# ---------- person masks + big words behind the person ----------
+_mcache = {}
+def _mask_file(f):
+    if f not in _mcache:
+        import os
+        p = os.path.join(P.get("masks", ""), f"{f:05d}.png")
+        _mcache[f] = Image.open(p).convert("L") if P.get("masks") and os.path.exists(p) else None
+        for k in [k for k in _mcache if k < f - 3]: del _mcache[k]
+    return _mcache[f]
+
+def person_mask(t, S):
+    f = int(round(t * FPS)); m = _mask_file(f)
+    if m is None:
+        a, b = _mask_file(f - 1), _mask_file(f + 1)
+        m = Image.blend(a, b, 0.5) if a is not None and b is not None else (a or b)
+    if m is None: return None
+    m = m.resize((W, H), Image.BILINEAR)
+    box = talk_xform(t, S)
+    return m if box is None else m.crop(box).resize((W, H), Image.BILINEAR)
+
+_bw = {}
+def big_sprite(text, size):
+    """Plain white word + soft drop shadow, as RGBA."""
+    k = (text, size)
+    if k not in _bw:
+        f = font(ANTON, size); l, tp, r, b = f.getbbox(text); pad = 60
+        a = Image.new("L", (r - l + 2 * pad, b - tp + 2 * pad), 0)
+        ImageDraw.Draw(a).text((pad - l, pad - tp), text, font=f, fill=255)
+        sh = Image.new("L", a.size, 0); ImageDraw.Draw(sh).text((pad - l + 6, pad - tp + 16), text, font=f, fill=200)
+        sh = sh.filter(ImageFilter.GaussianBlur(18))
+        im = Image.new("RGBA", a.size, (0, 0, 0, 0)); im.paste((0, 0, 0, 255), (0, 0), sh)
+        im.paste((255, 255, 255, 255), (0, 0), a); _bw[k] = im
+    return _bw[k]
+
+def fit_size(text, size, maxw):
+    f = font(ANTON, size); w = f.getbbox(text)[2] - f.getbbox(text)[0]
+    return int(size * min(1.0, maxw / max(1, w)))
+
+def big_word(c, t, S):
+    """Draws the current big word behind the person. Returns a camera-shake offset (dx, dy)."""
+    bigs = S.get("big", [])
+    cur = None
+    for k, b in enumerate(bigs):
+        end = b.get("t_end", bigs[k + 1]["t"] if k + 1 < len(bigs) else S["t1"])
+        if b["t"] <= t < end: cur = b
+    if cur is None: return (0, 0)
+    tt = t - cur["t"]; emo = cur.get("emotion", "pop")
+    size = fit_size(cur["text"], cur.get("size", 400), 0.94 * W)
+    sc, al, dx, dy, shake = 1.0, 1.0, 0.0, 0.0, (0, 0)
+    if emo == "slam":                          # crashes in from big, then the camera shakes
+        a = tt / 0.16; sc = lerp(1.9, 1.0, ease_out(a)); al = clamp(a * 2)
+        if 0.16 <= tt < 0.5:
+            k = (0.5 - tt) / 0.34; shake = (int(18 * k * math.sin(tt * 90)), int(12 * k * math.cos(tt * 77)))
+    elif emo == "pop": sc = max(0.05, ease_back(tt / 0.3)); al = clamp(tt / 0.1)
+    elif emo == "rise": al = ease_out(tt / 0.6); dy = 80 * (1 - ease_out(tt / 0.7))     # quiet, mysterious
+    elif emo == "shake":                       # nervous jitter: "not the one you think"
+        sc = max(0.05, ease_back(tt / 0.25)); dx = 7 * math.sin(tt * 61); dy = 5 * math.cos(tt * 47)
+    elif emo == "bounce":                      # springy hops
+        sc = max(0.05, ease_back(tt / 0.25)); dy = -abs(math.sin(tt * 2 * math.pi / 0.45)) * 70 * math.exp(-tt * 2.2)
+    elif emo == "grow":                        # building tension
+        al = clamp(tt / 0.2); sc = 0.92 + 0.12 * ease_io(tt / 2.5)
+    spr = big_sprite(cur["text"], size)
+    if abs(sc - 1) > 0.005: spr = spr.resize((max(1, int(spr.width * sc)), max(1, int(spr.height * sc))), Image.BICUBIC)
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    cx, cy = W / 2 + dx, cur.get("y", 0.2) * H + dy
+    layer.paste(spr, (int(cx - spr.width / 2), int(cy - spr.height / 2)), spr)
+    a = np.asarray(layer.getchannel("A"), np.float32) * al
+    m = person_mask(t, S)
+    if m is not None: a *= 1 - np.asarray(m, np.float32) / 255.0          # behind you: hidden wherever you are
+    layer.putalpha(Image.fromarray(a.astype(np.uint8)))
+    c.alpha_composite(layer)
+    return shake
 
 _grad = None
 def top_grad(c):
@@ -364,8 +457,13 @@ def seg_at(t):
 def compose(src, t):
     S = seg_at(t)
     if S["kind"] == "talk":
-        c = talk(src, t, S); top_grad(c)
+        c = talk(src, t, S)
+        if not S.get("big"): top_grad(c)
+        shake = big_word(c, t, S)
         draw_caption(c, t, S.get("cap_y", 0.17) * H)
+        if shake != (0, 0):
+            from PIL import ImageChops
+            c = ImageChops.offset(c, *shake)
         ti = S.get("title")
         if ti and t >= ti["t"]:
             s = ease_back((t - ti["t"]) / 0.3); f = font(ANTON, ti.get("size", 230) * max(s, 0.05))

@@ -1,4 +1,5 @@
 # Cut-out masks with rembg birefnet-portrait. Resumable: skips masks that already exist.
+# Model: CUTOUT_MODEL env var (default birefnet-portrait, best edges, ~24 s/frame on 4 CPUs; u2net_human_seg ~0.3 s/frame).
 # Order: the big-word frame first, then every 2nd frame, then the frames in between.
 import os, sys, time, onnxruntime as ort
 from rembg import new_session, remove
@@ -7,7 +8,7 @@ src, dst = sys.argv[1], sys.argv[2]
 names = sorted(os.listdir(src))
 order = names[::2] + names[1::2]
 o = ort.SessionOptions(); o.enable_cpu_mem_arena = False; o.enable_mem_pattern = False
-s = new_session("birefnet-portrait", sess_opts=o)
+s = new_session(os.environ.get("CUTOUT_MODEL", "birefnet-portrait"), sess_opts=o)
 done = sum(os.path.exists(os.path.join(dst, n.replace(".jpg", ".png"))) for n in names)
 t0 = time.time(); k = 0
 for n in order:
