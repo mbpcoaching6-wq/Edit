@@ -1,0 +1,33 @@
+{
+ "video": "/home/user/Edit/work/th_cut.mp4",
+ "words": "/home/user/Edit/work/thc_words.json",
+ "out_mp4": "/home/user/Edit/output/talking_head_motion.mp4",
+ "preview_dir": "/home/user/Edit/work/preview",
+ "tag": "SCIENCE",
+ "sfx_gain": 0.35,
+ "face": [540, 820, 360],
+ "word_fixes": {"87": "Bouncing", "103": "do", "121": "evidence-based", "122": ""},
+ "keywords": [["half reps", "yellow"], ["full reps", "white"], ["top half", "cyan"], ["bottom half", "orange"],
+              ["3%", "cyan"], ["7%", "white"], ["15%", "orange"], ["double", "yellow"], ["42", "yellow"],
+              ["eight weeks", "yellow"], ["spring", "yellow"], ["deep stretch", "orange"], ["every rep", "yellow"],
+              ["stop", "red"], ["same sets", "green"], ["energy", "yellow"], ["pause", "orange"]],
+ "segments": [
+  {"t0": 0, "t1": 4.0, "kind": "talk", "pulse": [0.0, 0.72], "punch": [[2.42, 4.0, 1.2]], "zoom_center": [0.5, 0.42]},
+  {"t0": 4.0, "t1": 6.9, "kind": "compare", "t_vs": 4.5, "t_win": 5.3},
+  {"t0": 6.9, "t1": 8.15, "kind": "talk", "punch": [[6.9, 8.15, 1.3]], "pulse": [7.5], "zoom_center": [0.5, 0.42]},
+  {"t0": 8.15, "t1": 10.75, "kind": "people", "t_weeks": 10.0},
+  {"t0": 10.75, "t1": 12.4, "kind": "sets", "t_eq": 11.08},
+  {"t0": 12.4, "t1": 20.2, "kind": "groups", "groups": [
+     {"t": 12.48, "mode": "full", "color": "white", "label": "FULL"},
+     {"t": 14.02, "mode": "top", "color": "cyan", "label": "TOP HALF", "note": {"t": 15.92, "text": "BOUNCE"}},
+     {"t": 17.2, "mode": "bottom", "color": "orange", "label": "BOTTOM HALF", "note": {"t": 19.08, "text": "STRETCH"}}]},
+  {"t0": 20.2, "t1": 28.35, "kind": "bars", "max_value": 15, "columns": [
+     {"label": "BOTTOM HALF", "color": "orange", "value": 15, "t": 24.8, "badge": {"t": 27.44, "text": "X2"}},
+     {"label": "FULL", "color": "white", "value": 7, "t": 22.6},
+     {"label": "TOP HALF", "color": "cyan", "value": 3, "t": 20.82}]},
+  {"t0": 28.35, "t1": 30.6, "kind": "spring"},
+  {"t0": 30.6, "t1": 34.5, "kind": "energy", "t_less": 33.88},
+  {"t0": 34.5, "t1": 37.5, "kind": "pause", "pause": [34.58, 36.0]},
+  {"t0": 37.5, "t1": 99, "kind": "talk", "pulse": [37.64], "title": {"t": 37.64, "text": "FOLLOW", "y": 0.64, "size": 240}}
+ ]
+}
