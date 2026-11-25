@@ -1,0 +1,208 @@
+{
+ "video": "/home/user/Edit/input/talking_head.mov",
+ "words": "/home/user/Edit/work/th_words.json",
+ "out_mp4": "/home/user/Edit/output/talking_head_edit.mp4",
+ "preview_dir": "/home/user/Edit/work/preview",
+ "tag": "SCIENCE",
+ "sfx_gain": 0.35,
+ "word_fixes": {
+  "87": "Bouncing",
+  "103": "do",
+  "121": "evidence-based",
+  "122": ""
+ },
+ "keywords": [
+  [
+   "half reps",
+   "yellow"
+  ],
+  [
+   "full reps",
+   "white"
+  ],
+  [
+   "top half",
+   "cyan"
+  ],
+  [
+   "bottom half",
+   "orange"
+  ],
+  [
+   "3%",
+   "cyan"
+  ],
+  [
+   "7%",
+   "white"
+  ],
+  [
+   "15%",
+   "orange"
+  ],
+  [
+   "double",
+   "yellow"
+  ],
+  [
+   "42",
+   "yellow"
+  ],
+  [
+   "eight weeks",
+   "yellow"
+  ],
+  [
+   "spring",
+   "yellow"
+  ],
+  [
+   "deep stretch",
+   "orange"
+  ],
+  [
+   "every rep",
+   "yellow"
+  ]
+ ],
+ "segments": [
+  {
+   "t0": 0,
+   "t1": 10.5,
+   "kind": "talk",
+   "punch": [
+    [
+     3.2,
+     8.2,
+     1.18
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.3
+   ]
+  },
+  {
+   "t0": 10.5,
+   "t1": 35.6,
+   "kind": "panel",
+   "face_y": 0.47,
+   "punch": [
+    [
+     10.5,
+     35.6,
+     1.15
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "t0": 35.6,
+   "t1": 44.6,
+   "kind": "talk",
+   "punch": [
+    [
+     39.2,
+     44.6,
+     1.18
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.3
+   ]
+  },
+  {
+   "t0": 44.6,
+   "t1": 48.4,
+   "kind": "talk",
+   "punch": [
+    [
+     44.6,
+     48.4,
+     1.3
+    ]
+   ],
+   "zoom_center": [
+    0.5,
+    0.3
+   ]
+  },
+  {
+   "t0": 48.4,
+   "t1": 99,
+   "kind": "talk",
+   "title": {
+    "t": 48.54,
+    "text": "FOLLOW",
+    "y": 0.62,
+    "size": 240
+   }
+  }
+ ],
+ "data": {
+  "max_value": 15,
+  "weeks": {
+   "t0": 10.64,
+   "t1": 13.1,
+   "n": 8
+  },
+  "columns": [
+   {
+    "label": "BOTTOM HALF",
+    "color": "orange",
+    "lit": [
+     [
+      21.54,
+      24.9
+     ],
+     [
+      30.1,
+      99
+     ]
+    ],
+    "value": 15,
+    "t": 31.0,
+    "badge": {
+     "t": 33.48,
+     "text": "X2"
+    }
+   },
+   {
+    "label": "FULL",
+    "color": "white",
+    "lit": [
+     [
+      15.8,
+      17.6
+     ],
+     [
+      27.32,
+      30.1
+     ]
+    ],
+    "value": 7,
+    "t": 28.36
+   },
+   {
+    "label": "TOP HALF",
+    "color": "cyan",
+    "lit": [
+     [
+      17.62,
+      21.5
+     ],
+     [
+      24.94,
+      27.3
+     ]
+    ],
+    "value": 3,
+    "t": 25.8
+   }
+  ]
+ }
+}
