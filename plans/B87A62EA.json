@@ -1,0 +1,238 @@
+{
+ "video": "/home/user/Edit/input/B87A62EA.mp4",
+ "words": "/home/user/Edit/work/words.json",
+ "out_mp4": "/home/user/Edit/output/B87A62EA_reel.mp4",
+ "preview_dir": "/home/user/Edit/work/preview",
+ "hdr": true,
+ "sfx_gain": 0.35,
+ "segments": [
+  {
+   "t0": 0,
+   "t1": 5.067,
+   "kind": "footage",
+   "zoom": [
+    1.0,
+    1.08
+   ],
+   "zoom_center": [
+    0.5,
+    0.45
+   ],
+   "captions": "none",
+   "title": {
+    "t": 0.05,
+    "small": "one gym tip for",
+    "big": "BIGGER LEGS",
+    "y": 0.07,
+    "size": 124
+   },
+   "chips": [
+    {
+     "t": 2.4,
+     "t_end": 3.067,
+     "text": "BEFORE",
+     "x": 0.3,
+     "y": 0.8,
+     "size": 60
+    },
+    {
+     "t": 3.067,
+     "t_end": 5.067,
+     "text": "AFTER",
+     "x": 0.3,
+     "y": 0.8,
+     "size": 60,
+     "bg": [
+      246,
+      197,
+      72,
+      245
+     ],
+     "fg": [
+      34,
+      34,
+      34
+     ]
+    },
+    {
+     "t": 4.22,
+     "t_end": 5.067,
+     "text": "naturally",
+     "x": 0.3,
+     "y": 0.86,
+     "size": 48,
+     "bg": [
+      118,
+      118,
+      118,
+      235
+     ]
+    }
+   ]
+  },
+  {
+   "t0": 5.067,
+   "t1": 8.0,
+   "kind": "split",
+   "split_y": 0.42,
+   "crop_center": 0.68,
+   "graphic": {
+    "heading": "Hack Squat",
+    "icon": "dumbbell"
+   }
+  },
+  {
+   "t0": 8.0,
+   "t1": 11.9,
+   "kind": "footage",
+   "cap_y": 0.5,
+   "zoom_center": [
+    0.5,
+    0.5
+   ],
+   "punch": [
+    [
+     10.18,
+     11.9,
+     1.15
+    ]
+   ],
+   "chips": [
+    {
+     "t": 10.28,
+     "text": "Knees dip",
+     "icon": "warn",
+     "y": 0.7,
+     "bg": [
+      226,
+      84,
+      64,
+      235
+     ]
+    }
+   ]
+  },
+  {
+   "t0": 11.9,
+   "t1": 15.6,
+   "kind": "split",
+   "split_y": 0.42,
+   "crop_center": 0.68,
+   "graphic": {
+    "heading": "Tension shifts",
+    "icon": "warn",
+    "flow": {
+     "from": "QUADS",
+     "to": "HIPS",
+     "t_from": 13.5,
+     "t_to": 14.5
+    }
+   }
+  },
+  {
+   "t0": 15.6,
+   "t1": 19.6,
+   "kind": "card",
+   "graphic": {
+    "heading": "The Fix",
+    "icon": "down",
+    "icon_type": "cube",
+    "rows": [
+     {
+      "t": 17.4,
+      "text": "Feet lower on the pad",
+      "icon": "down"
+     }
+    ]
+   }
+  },
+  {
+   "t0": 19.6,
+   "t1": 27.85,
+   "kind": "footage",
+   "cap_y": 0.5,
+   "zoom_center": [
+    0.5,
+    0.5
+   ],
+   "punch": [
+    [
+     23.2,
+     27.85,
+     1.15
+    ]
+   ],
+   "chips": [
+    {
+     "t": 22.18,
+     "text": "Full knee flexion",
+     "icon": "check",
+     "y": 0.7
+    },
+    {
+     "t": 24.08,
+     "text": "Knees stay put",
+     "icon": "check",
+     "y": 0.765
+    }
+   ]
+  },
+  {
+   "t0": 27.85,
+   "t1": 36.3,
+   "kind": "card",
+   "graphic": {
+    "heading": "Quads grow with",
+    "icon": "up",
+    "icon_type": "cube",
+    "t": 27.9,
+    "rows": [
+     {
+      "t": 29.36,
+      "text": "Training hard"
+     },
+     {
+      "t": 30.46,
+      "text": "Eating for your goals"
+     },
+     {
+      "t": 33.56,
+      "text": "Enough volume"
+     },
+     {
+      "t": 34.14,
+      "text": "Weekly frequency"
+     },
+     {
+      "t": 34.76,
+      "text": "Recovery"
+     }
+    ]
+   }
+  },
+  {
+   "t0": 36.3,
+   "t1": 38.3,
+   "kind": "footage",
+   "cap_y": 0.5,
+   "zoom": 1.15,
+   "zoom_center": [
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "t0": 38.3,
+   "t1": 99,
+   "kind": "footage",
+   "cap_y": 0.5,
+   "title": {
+    "t": 38.35,
+    "small": "reach out &",
+    "big": "FOLLOW",
+    "y": 0.07,
+    "size": 190
+   }
+  }
+ ]
+}
