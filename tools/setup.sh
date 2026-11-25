@@ -6,6 +6,13 @@ echo "== step: python packages"
 [ -d .venv ] || python3 -m venv .venv
 .venv/bin/pip install -q --upgrade pip
 .venv/bin/pip install -q faster-whisper "rembg[cpu]" pillow numpy
+echo "== step: video tools (FFmpeg, yt-dlp, HyperFrames)"
+command -v ffmpeg >/dev/null || { apt-get update -qq && apt-get install -y -qq ffmpeg; }
+.venv/bin/pip install -q -U yt-dlp
+command -v hyperframes >/dev/null || npm install -g hyperframes
+ffmpeg -version | head -1
+.venv/bin/yt-dlp --version
+hyperframes --version
 echo "== step: fonts"
 curl -sSfL -o fonts/Anton-Regular.ttf "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf"
 curl -sSfL -o "fonts/Inter.ttf" "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf"
